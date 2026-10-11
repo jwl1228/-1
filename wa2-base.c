@@ -28,16 +28,26 @@ void printCalendar(int firstWeekday, int days);
  * 함정: 첫 질문은 부르는 쪽(main)이 이미 찍었습니다. 여기서 또 찍지 마세요. */
 int readIntInRange(int lo, int hi)
 {
-    (void)lo; (void)hi;   /* 구현을 시작하면 이 줄을 지우세요 */
-    return 0;
+    int value = 0;
+    scanf("%d", &value);
+
+    while (value < lo || value > hi) {
+        printf("[오류] %d~%d 사이의 값을 입력하세요.\n", lo, hi);
+        printf("> ");
+        scanf("%d", &value);
+    }
+    return value;
 }
 
 /* ── [TODO 요구사항 2-a] 윤년이면 1, 아니면 0 을 반환 ─────────────
  * 실습#1 에서 main 안에 썼던 식을 그대로 옮겨 오면 됩니다. */
 int isLeapYear(int year)
 {
-    (void)year;
-    return 0;
+    if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 /* ── [TODO 요구사항 2-b] 그 달의 일수를 반환 ──────────────────────
@@ -46,8 +56,13 @@ int isLeapYear(int year)
  *       같은 조건식을 두 번 쓰면 함수로 나눈 의미가 없습니다. */
 int daysInMonth(int year, int month)
 {
-    (void)year; (void)month;
-    return 0;
+    if (month == 4 || month == 6 || month == 9 || month == 11) {
+        return 30;
+    } else if (month == 2) {
+        return isLeapYear(year) ? 29 : 28;
+    } else {
+        return 31;
+    }
 }
 
 /* ── [TODO 요구사항 3] 그 달 1일의 요일 (0=일 … 6=토) ─────────────
@@ -59,8 +74,23 @@ int daysInMonth(int year, int month)
  *       2000년 1월을 넣으면 경과일이 0 이고 요일이 그대로 토요일이어야 합니다. */
 int firstWeekdayOf(int year, int month)
 {
-    (void)year; (void)month;
-    return 0;
+    int totalDays = 0;
+    int y = 0;
+    int m = 0;
+
+    for (y = 2000; y < year; y++) {
+        if (isLeapYear(y) == 1) {
+            totalDays += 366;
+        } else {
+            totalDays += 365;
+        }
+    }
+
+    for (m = 1; m < month; m++) {
+        totalDays += daysInMonth(year, m);
+    }
+
+    return (totalDays + 6) % 7;  // 2000년 1월 1일은 토요일(6)
 }
 
 /* ── [TODO 요구사항 4] 달력 격자 출력 ─────────────────────────────
@@ -73,8 +103,34 @@ int firstWeekdayOf(int year, int month)
  *       ─ 빈 칸을 찍고 「그 칸은 여기까지」로 넘어가는 방법이 있습니다. */
 void printCalendar(int firstWeekday, int days)
 {
-    (void)firstWeekday; (void)days;
-    printf("(아직 미구현입니다 — 요구사항 4 를 채우면 이 줄을 지우세요)\n");
+    int d = 1;
+    int week = 0;
+    int weekday = 0;
+
+    while (d <= days) {
+
+        for (weekday = 0; weekday < 7; weekday++) {
+
+            /* 첫째 주에서 1일 이전 칸 */
+            if (week == 0 && weekday < firstWeekday) {
+                printf("    ");
+            }
+
+            /* 날짜가 존재하는 칸 */
+            else if (d <= days) {
+                printf("%3d ", d);
+                d++;
+            }
+
+            /* 마지막 날짜 이후 빈 칸 */
+            else {
+                printf("    ");
+            }
+        }
+
+        printf("\n");
+        week++;
+    }
 }
 
 /* ── [수정 금지] ─────────────────────────────────────────── */
